@@ -911,11 +911,30 @@ html[data-theme="light"] #deductionsMessage.warning{border-color:#a1620755;backg
 #liveSummary tbody tr:nth-child(even) td{background:var(--surface-inset)}
 #liveSummary tbody tr:hover td{background:var(--surface-raised)}
 #liveSupervisorStatusRows{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+#liveAllStatusRows{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
 .live-status-item{min-width:0;padding:9px 10px;border:1px solid var(--bd);border-radius:9px;background:var(--surface-inset)}
+.live-status-item{appearance:none;display:block;width:100%;color:var(--tx);font:inherit;text-align:start;cursor:pointer;transition:border-color .18s ease,background-color .18s ease}
+.live-status-item:hover,.live-status-item[aria-expanded="true"]{border-color:var(--pr);background:var(--surface-raised)}
+.live-status-item:focus-visible{outline:2px solid var(--pr);outline-offset:2px}
 .live-status-item-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:7px}
 .live-status-item-head strong{overflow-wrap:anywhere}
 .live-status-track{height:6px;overflow:hidden;border-radius:99px;background:var(--bd)}
 .live-status-fill{height:100%;border-radius:inherit;background:var(--pr)}
+.live-status-details{margin-top:12px;padding:12px;border:1px solid var(--bd);border-radius:10px;background:var(--surface-inset)}
+.live-status-details-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.live-status-details-head strong{font-size:13px}
+.live-status-rider-list{display:grid;gap:6px;max-height:45vh;overflow:auto}
+.live-status-rider-row{display:grid;grid-template-columns:minmax(150px,1.4fr) repeat(4,minmax(100px,1fr));gap:8px;padding:9px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--surface-raised)}
+.live-status-rider-field{min-width:0;display:grid;gap:2px}
+.live-status-rider-field .sub{font-size:10px}
+.live-status-rider-field strong{min-width:0;overflow-wrap:anywhere;font-size:12px}
+.live-status-rider-field[data-rider-field="phone"] strong{direction:ltr;text-align:right}
+.live-status-details-empty{padding:12px;text-align:center}
+@media(max-width:699px){
+ .live-status-details{padding:9px}
+ .live-status-rider-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .live-status-rider-field:first-child{grid-column:1/-1}
+}
 #liveTable{max-width:100%;max-height:70vh;overflow-x:hidden}
 #liveTable table{width:100%;min-width:0;table-layout:fixed;font-size:10px}
 #liveTable th,#liveTable td{white-space:normal;overflow-wrap:anywhere;text-align:center}
@@ -1395,10 +1414,12 @@ html[data-theme="light"] body{background:radial-gradient(ellipse at 8% 0%,#d6f4f
  <div class="live-wrap">
   <div class="row live-head">
    <h2 id="liveTitle">🔴 Live</h2><span class="sub" id="liveCount"></span>
-   <span id="liveActions" style="margin-inline-start:auto;display:flex;gap:6px"><button class="btn live-supervisor-action" id="liveStatusSummaryToggle" type="button" aria-controls="liveSupervisorStatusSummary" aria-expanded="false" style="display:none">📊 نسب حالات مناديبي</button><button class="btn live-manager-action" id="liveSupervisorSummaryToggle" type="button" aria-controls="liveSupervisorSummary" aria-expanded="false">عرض المشرفين</button><button class="btn live-manager-action" id="liveZoneSummaryToggle" type="button" aria-controls="liveZoneSummary" aria-expanded="false">عرض الزون</button><button class="btn live-manager-action" id="liveScreenshot" type="button">📸 سكرين</button><button class="btn" id="liveClose" type="button">✕ إغلاق</button></span>
+   <span id="liveActions" style="margin-inline-start:auto;display:flex;gap:6px"><button class="btn live-supervisor-action" id="liveStatusSummaryToggle" type="button" aria-controls="liveSupervisorStatusSummary" aria-expanded="false" style="display:none">📊 نسب حالات مناديبي</button><button class="btn live-monitor-action" id="liveAllStatusToggle" type="button" aria-controls="liveAllStatusSummary" aria-expanded="false" style="display:none">📊 نسب كل الحالات</button><button class="btn live-monitor-action" id="liveZoneStatusToggle" type="button" aria-controls="liveZoneStatusSummary" aria-expanded="false" style="display:none">🗺️ نسب الحالات لكل زون</button><button class="btn live-manager-action" id="liveSupervisorSummaryToggle" type="button" aria-controls="liveSupervisorSummary" aria-expanded="false">عرض المشرفين</button><button class="btn live-manager-action" id="liveZoneSummaryToggle" type="button" aria-controls="liveZoneSummary" aria-expanded="false">عرض الزون</button><button class="btn live-manager-action" id="liveScreenshot" type="button">📸 سكرين</button><button class="btn" id="liveClose" type="button">✕ إغلاق</button></span>
   </div>
   <div id="liveMessage" role="status" aria-live="polite"></div>
-  <section class="card" id="liveSupervisorStatusSummary" style="display:none" aria-live="polite"><h3 style="margin:0 0 4px">نسب حالات مناديبك النشطين</h3><div class="sub" id="liveSupervisorStatusMeta" style="margin:0 0 10px"></div><div id="liveSupervisorStatusRows"></div></section>
+  <section class="card" id="liveAllStatusSummary" style="display:none" aria-live="polite"><h3 style="margin:0 0 4px">نسبة كل الحالات</h3><div class="sub" id="liveAllStatusMeta" style="margin:0 0 10px"></div><div id="liveAllStatusRows"></div><div class="live-status-details" id="liveAllStatusDetails" hidden></div></section>
+  <section class="card" id="liveZoneStatusSummary" style="display:none" aria-live="polite"><h3 style="margin:0 0 4px">نسب الحالات لكل زون</h3><div class="sub" id="liveZoneStatusMeta" style="margin:0 0 10px"></div><div id="liveZoneStatusRows"></div></section>
+  <section class="card" id="liveSupervisorStatusSummary" style="display:none" aria-live="polite"><h3 style="margin:0 0 4px">نسب حالات مناديبك النشطين</h3><div class="sub" id="liveSupervisorStatusMeta" style="margin:0 0 10px"></div><div id="liveSupervisorStatusRows"></div><div class="live-status-details" id="liveSupervisorStatusDetails" hidden></div></section>
   <div class="card" id="liveSummary" style="display:none">
    <section class="live-summary-section" id="liveSupervisorSummary" style="display:none" aria-live="polite"><h3>حالات وساعات العمل لكل مشرف</h3><div id="liveSupervisorSummaryTable"></div></section>
    <section class="live-summary-section" id="liveZoneSummary" style="display:none" aria-live="polite"><h3>حالات وساعات العمل لكل زون</h3><div id="liveZoneSummaryTable"></div></section>
@@ -1702,8 +1723,15 @@ function liveCanViewSummaries(){return Boolean(CUR&&['admin','manager'].includes
 function updateLiveRoleControls(user=CUR){
   const allowed=Boolean(user&&['admin','manager'].includes(user.r));
   const supervisor=Boolean(user&&user.r==='sup');
+  const monitor=Boolean(user&&user.r==='monitor');
   document.querySelectorAll('.live-manager-action').forEach(button=>button.style.display=allowed?'':'none');
   document.querySelectorAll('.live-supervisor-action').forEach(button=>button.style.display=supervisor?'':'none');
+  document.querySelectorAll('.live-monitor-action').forEach(button=>button.style.display=monitor?'':'none');
+  if(!monitor){
+    $('liveAllStatusSummary').style.display='none';$('liveZoneStatusSummary').style.display='none';
+    $('liveAllStatusToggle').setAttribute('aria-expanded','false');$('liveZoneStatusToggle').setAttribute('aria-expanded','false');
+    $('liveAllStatusToggle').textContent='📊 نسب كل الحالات';$('liveZoneStatusToggle').textContent='🗺️ نسب الحالات لكل زون';
+  }
   if(!supervisor){
     $('liveSupervisorStatusSummary').style.display='none';
     $('liveStatusSummaryToggle').setAttribute('aria-expanded','false');
@@ -1719,6 +1747,44 @@ function renderLiveSummary(rows){
   if($('liveSupervisorSummary').style.display!=='none')$('liveSupervisorSummaryTable').innerHTML=liveSummaryTable(rows,16);
   if($('liveZoneSummary').style.display!=='none')$('liveZoneSummaryTable').innerHTML=liveSummaryTable(rows,1);
 }
+let LIVE_STATUS_DETAILS=null;
+function liveStatusFieldIndexes(){
+  const indexFor=pattern=>LIVE_HEADERS.findIndex(header=>pattern.test(String(header||'').trim().toLocaleLowerCase('en').replace(/[\s_.()-]/g,'')));
+  const withFallback=(pattern,fallback)=>{const index=indexFor(pattern);return index<0?fallback:index};
+  return{
+    id:withFallback(/^(id|riderid|كودالطيار|كودالمندوب)$/,2),
+    name:withFallback(/^(name|ridername|اسم|اسمالمندوب|اسمالطيار)$/,3),
+    zone:withFallback(/^(zone|الزون|المنطقه|المنطقة)$/,1),
+    supervisor:withFallback(/^(supervisor|اسمالمشرف|المشرف)$/,16),
+    phone:withFallback(/^(phone|phoneno|phonenumber|mobile|mobileno|رقمالتليفون|رقمالهاتف|رقمالموبايل|الموبايل)$/,4)
+  };
+}
+function renderLiveStatusDetails(rows,kind,state){
+  const panel=$(kind==='supervisor'?'liveSupervisorStatusDetails':'liveAllStatusDetails');
+  const selected=LIVE_STATUS_DETAILS&&LIVE_STATUS_DETAILS.kind===kind&&LIVE_STATUS_DETAILS.state===state;
+  panel.hidden=!selected;
+  if(!selected){panel.replaceChildren();return}
+  const columns=liveStatusFieldIndexes(),rosterById=new Map(ALL.map(row=>[String(row.id||'').trim().replace(/\.0$/,''),row]));
+  const riders=rows.filter(({cells})=>(String(cells[14]||'').trim()||'غير محدد')===state).map(({cells})=>{
+    const id=String(cells[columns.id]||'').trim().replace(/\.0$/,''),rider=rosterById.get(id);
+    return{
+      name:String(cells[columns.name]||rider&&rider.n||'—').trim(),
+      id:id||'—',
+      supervisor:String(cells[columns.supervisor]||rider&&rider.s||'—').trim(),
+      zone:String(cells[columns.zone]||'—').trim(),
+      phone:String(cells[columns.phone]||'—').trim()
+    };
+  }).sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+  const field=(label,value,key)=>`<div class="live-status-rider-field" data-rider-field="${key}"><span class="sub">${label}</span><strong>${esc(value)}</strong></div>`;
+  panel.innerHTML=`<div class="live-status-details-head"><strong>مناديب حالة ${esc(state)}</strong><span class="sub">${NF(riders.length)} مندوب</span><button class="btn" type="button" data-close-live-status="${kind}" style="margin-inline-start:auto">إغلاق</button></div>${riders.length?`<div class="live-status-rider-list" role="list">${riders.map(rider=>`<div class="live-status-rider-row" role="listitem">${field('المندوب',rider.name,'name')}${field('ID',rider.id,'id')}${field('اسم المشرف',rider.supervisor,'supervisor')}${field('الزون',rider.zone,'zone')}${field('رقم التليفون',rider.phone,'phone')}</div>`).join('')}</div>`:'<div class="sub live-status-details-empty">لا يوجد مناديب نشطون بهذه الحالة حاليًا.</div>'}`;
+}
+function toggleLiveStatusDetails(kind,state){
+  if(kind==='supervisor'&&(!CUR||CUR.r!=='sup')||kind==='all'&&(!CUR||CUR.r!=='monitor'))return;
+  const isSame=LIVE_STATUS_DETAILS&&LIVE_STATUS_DETAILS.kind===kind&&LIVE_STATUS_DETAILS.state===state;
+  LIVE_STATUS_DETAILS=isSame?null:{kind,state};
+  if(kind==='supervisor')renderLiveSupervisorStatus(liveEligibleRows());
+  else renderLiveAllStatus(liveEligibleRows());
+}
 function renderLiveSupervisorStatus(rows){
   const counts=new Map();
   rows.forEach(({cells})=>{const state=String(cells[14]||'').trim()||'غير محدد';counts.set(state,(counts.get(state)||0)+1)});
@@ -1726,8 +1792,41 @@ function renderLiveSupervisorStatus(rows){
   $('liveSupervisorStatusMeta').textContent=total?`إجمالي مناديبك النشطين: ${NF(total)} — النسب من كل المناديب، بدون تطبيق فلاتر الشاشة.`:'لا يوجد مناديب نشطون تابعون لحسابك حاليًا.';
   $('liveSupervisorStatusRows').innerHTML=[...counts].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'ar')).map(([state,count])=>{
     const percent=total?count/total*100:0,shown=new Intl.NumberFormat('ar-EG',{maximumFractionDigits:1}).format(percent);
-    return`<div class="live-status-item"><div class="live-status-item-head"><strong>${esc(state)}</strong><span>${NF(count)} · ${shown}٪</span></div><div class="live-status-track" aria-hidden="true"><div class="live-status-fill" style="width:${percent.toFixed(2)}%"></div></div></div>`;
+    const expanded=Boolean(LIVE_STATUS_DETAILS&&LIVE_STATUS_DETAILS.kind==='supervisor'&&LIVE_STATUS_DETAILS.state===state);
+    return`<button class="live-status-item" type="button" data-live-status="${esc(state)}" aria-expanded="${expanded}" aria-controls="liveSupervisorStatusDetails" aria-label="عرض ${NF(count)} مندوب بحالة ${esc(state)}"><div class="live-status-item-head"><strong>${esc(state)}</strong><span>${NF(count)} · ${shown}٪　⌄</span></div><div class="live-status-track" aria-hidden="true"><div class="live-status-fill" style="width:${percent.toFixed(2)}%"></div></div></button>`;
   }).join('');
+  renderLiveStatusDetails(rows,'supervisor',LIVE_STATUS_DETAILS&&LIVE_STATUS_DETAILS.kind==='supervisor'?LIVE_STATUS_DETAILS.state:null);
+}
+function livePercent(value,total){
+  return new Intl.NumberFormat('ar-EG',{minimumFractionDigits:1,maximumFractionDigits:1}).format(total?value/total*100:0)+'٪';
+}
+function renderLiveAllStatus(rows){
+  const counts=new Map();
+  rows.forEach(({cells})=>{const state=String(cells[14]||'').trim()||'غير محدد';counts.set(state,(counts.get(state)||0)+1)});
+  const total=rows.length;
+  $('liveAllStatusMeta').textContent=`الإجمالي ${NF(total)} مندوب نشط · النسبة من كل المحافظات ما عدا القاهرة، بدون فلاتر البحث.`;
+  $('liveAllStatusRows').innerHTML=total?[...counts].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'ar')).map(([state,count])=>{
+    const percent=count/total*100;
+    const expanded=Boolean(LIVE_STATUS_DETAILS&&LIVE_STATUS_DETAILS.kind==='all'&&LIVE_STATUS_DETAILS.state===state);
+    return`<button class="live-status-item" type="button" data-live-status="${esc(state)}" aria-expanded="${expanded}" aria-controls="liveAllStatusDetails" aria-label="عرض ${NF(count)} مندوب بحالة ${esc(state)}"><div class="live-status-item-head"><strong>${esc(state)}</strong><span>${NF(count)} · ${livePercent(count,total)}　⌄</span></div><div class="live-status-track" aria-hidden="true"><div class="live-status-fill" style="width:${percent.toFixed(2)}%"></div></div></button>`;
+  }).join(''):'<div class="sub">لا يوجد مندوبون نشطون لحساب النسب حاليًا.</div>';
+  renderLiveStatusDetails(rows,'all',LIVE_STATUS_DETAILS&&LIVE_STATUS_DETAILS.kind==='all'?LIVE_STATUS_DETAILS.state:null);
+}
+function renderLiveZoneStatus(rows){
+  const groups=new Map(),states=new Set;
+  rows.forEach(({cells})=>{
+    const zone=String(cells[1]||'').trim()||'غير محدد',state=String(cells[14]||'').trim()||'غير محدد';
+    states.add(state);
+    const counts=groups.get(zone)||new Map;
+    counts.set(state,(counts.get(state)||0)+1);groups.set(zone,counts);
+  });
+  const orderedStates=[...states].sort((a,b)=>a.localeCompare(b,'ar'));
+  const orderedZones=[...groups].sort((a,b)=>[...b[1].values()].reduce((sum,count)=>sum+count,0)-[...a[1].values()].reduce((sum,count)=>sum+count,0)||a[0].localeCompare(b[0],'ar'));
+  $('liveZoneStatusMeta').textContent=`النسبة لكل حالة محسوبة من إجمالي المندوبين النشطين داخل الزون نفسه · بدون فلاتر البحث.`;
+  $('liveZoneStatusRows').innerHTML=orderedZones.length?`<div class="live-summary-table-wrap"><table class="live-summary-table"><thead><tr><th scope="col">الزون</th>${orderedStates.map(state=>`<th scope="col">${esc(state)}<div class="sub" style="margin:0">العدد · النسبة</div></th>`).join('')}<th scope="col">الإجمالي</th></tr></thead><tbody>${orderedZones.map(([zone,counts])=>{
+    const total=[...counts.values()].reduce((sum,count)=>sum+count,0);
+    return`<tr><th scope="row">${esc(zone)}</th>${orderedStates.map(state=>{const count=counts.get(state)||0;return`<td>${NF(count)} · ${livePercent(count,total)}</td>`}).join('')}<td><strong>${NF(total)}</strong></td></tr>`;
+  }).join('')}</tbody></table></div>`:'<div class="sub">لا توجد بيانات زونات نشطة حاليًا.</div>';
 }
 function renderLive(){
   const active=liveEligibleRows(),button=$('liveB'),panel=$('livePanel'),thead=$('liveHead'),tbody=$('liveBody');
@@ -1741,6 +1840,8 @@ function renderLive(){
   const visible=liveFilteredRows(active);
   if($('liveSummary').style.display!=='none')renderLiveSummary(visible);
   if($('liveSupervisorStatusSummary').style.display!=='none'&&CUR&&CUR.r==='sup')renderLiveSupervisorStatus(active);
+  if($('liveAllStatusSummary').style.display!=='none'&&CUR&&CUR.r==='monitor')renderLiveAllStatus(active);
+  if($('liveZoneStatusSummary').style.display!=='none'&&CUR&&CUR.r==='monitor')renderLiveZoneStatus(active);
   $('liveCount').textContent='عرض '+NF(visible.length)+' من '+NF(active.length)+' مندوب خلال آخر 10 دقائق';
   $('liveMessage').classList.toggle('error',!!LIVE_ERROR);
   const sheetUpdated=LIVE_SHEET_UPDATE_TIME?'آخر تحديث: '+fdt(LIVE_SHEET_UPDATE_TIME):'وقت آخر تحديث غير متاح';
@@ -1802,7 +1903,8 @@ function toggleLiveSupervisorStatus(){
   section.style.display=open?'block':'none';
   button.setAttribute('aria-expanded',String(open));
   button.textContent=open?'إخفاء نسب الحالات':'📊 نسب حالات مناديبي';
-  if(open)renderLiveSupervisorStatus(liveEligibleRows());
+  if(!open&&LIVE_STATUS_DETAILS&&LIVE_STATUS_DETAILS.kind==='supervisor')LIVE_STATUS_DETAILS=null;
+  renderLiveSupervisorStatus(liveEligibleRows());
 }
 async function captureLiveTable(button){
   const status=$('liveScreenshotStatus');
@@ -1830,6 +1932,33 @@ $('liveClose').addEventListener('click',closeLivePanel);
 $('liveSupervisorSummaryToggle').addEventListener('click',()=>toggleLiveSummary('supervisor'));
 $('liveZoneSummaryToggle').addEventListener('click',()=>toggleLiveSummary('zone'));
 $('liveStatusSummaryToggle').addEventListener('click',toggleLiveSupervisorStatus);
+$('liveAllStatusToggle').addEventListener('click',()=>{
+  if(!CUR||CUR.r!=='monitor')return;
+  const section=$('liveAllStatusSummary'),button=$('liveAllStatusToggle'),open=section.style.display==='none';
+  section.style.display=open?'block':'none';button.setAttribute('aria-expanded',String(open));
+  button.textContent=open?'إخفاء نسب كل الحالات':'📊 نسب كل الحالات';
+  if(!open&&LIVE_STATUS_DETAILS&&LIVE_STATUS_DETAILS.kind==='all')LIVE_STATUS_DETAILS=null;
+  renderLiveAllStatus(liveEligibleRows());
+});
+$('liveAllStatusSummary').addEventListener('click',event=>{
+  const close=event.target.closest('[data-close-live-status]');
+  if(close){LIVE_STATUS_DETAILS=null;renderLiveAllStatus(liveEligibleRows());return}
+  const card=event.target.closest('button[data-live-status]');
+  if(card)toggleLiveStatusDetails('all',card.dataset.liveStatus);
+});
+$('liveSupervisorStatusSummary').addEventListener('click',event=>{
+  const close=event.target.closest('[data-close-live-status]');
+  if(close){LIVE_STATUS_DETAILS=null;renderLiveSupervisorStatus(liveEligibleRows());return}
+  const card=event.target.closest('button[data-live-status]');
+  if(card)toggleLiveStatusDetails('supervisor',card.dataset.liveStatus);
+});
+$('liveZoneStatusToggle').addEventListener('click',()=>{
+  if(!CUR||CUR.r!=='monitor')return;
+  const section=$('liveZoneStatusSummary'),button=$('liveZoneStatusToggle'),open=section.style.display==='none';
+  section.style.display=open?'block':'none';button.setAttribute('aria-expanded',String(open));
+  button.textContent=open?'إخفاء نسب الحالات لكل زون':'🗺️ نسب الحالات لكل زون';
+  if(open)renderLiveZoneStatus(liveEligibleRows());
+});
 $('liveScreenshot').addEventListener('click',event=>captureLiveTable(event.currentTarget));
 $('liveHybridOnly').addEventListener('click',()=>{LIVE_HYBRID_ONLY=!LIVE_HYBRID_ONLY;$('liveHybridOnly').setAttribute('aria-pressed',String(LIVE_HYBRID_ONLY));renderLive()});
 $('livePartTimeOnly').addEventListener('click',()=>{LIVE_PART_TIME_ONLY=!LIVE_PART_TIME_ONLY;$('livePartTimeOnly').setAttribute('aria-pressed',String(LIVE_PART_TIME_ONLY));renderLive()});
